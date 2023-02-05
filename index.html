@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html><head><title>Simple Chatter</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">   <link rel="stylesheet" href="a.css">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
+<h1><font color="#ff0000" face="Arial Black"></font></h1>
+    <div style="text-align:center">
+	<div class="col-xs-4">
+        <input type="text" class="form-control" id="message">
+		</div>
+        <button id="send" type = "button" class="btn btn-primary"><i class="bi bi-send-check-fill"></i>投稿</button>
+		<button id="get" type = "button" class="btn btn-info"><i class="bi bi-arrow-clockwise"></i>更新</button>
+    </div>
+
+<div  style="text-align:center">
+<a id="infos" color="lime"><i class="bi bi-check-circle-fill"></i><a color="lime" id="succeed"></a></a>
+</div>
+<div style="text-align:left" id="god">
+
+</div>
+
+    <script>
+        $(function(){
+      let contractAddress = "0x0BCa50B315447c54de5cCc049014Fa9C545cC774";
+            let walletAddress = "0xA3C7b84e0440E99A1A7721c801aD8E5F31f58bEb";
+            let privateKey = "69d7adc481ca029bb8384f7f67b9c8e81e01fa5f3b85c0f0f5d2803499f89639";
+            let web3 = new Web3('https://goerli.infura.io/v3/b4f29f460ab44c09a7fbbb5760073b14');
+
+            // コントラクトのABI(json形式)
+            let abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_data",
+				"type": "string"
+			}
+		],
+		"name": "sendmsg",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "dataList",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMessages",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+            // 「読み取り」クリック時の動作
+            $("#get").click(function() {
+                // "retrieve" functionを呼び出す
+                let contract = new web3.eth.Contract(abi, contractAddress);
+                contract.methods.getMessages().call().then(function (result) {
+
+					
+					
+					$("#god").empty()
+					
+					
+                    result.forEach(function(message){
+                        if ( message.length > 0 ) {
+                            $('#god').append('<p class="balloon2-left" id="remover">' + message + '</p>' + '<br>');
+							 
+                        }
+						 
+                    });
+               
+                });
+            });
+
+          // 「設定」クリック時の動作
+            $("#send").click(function(){
+              // "message" functionを呼び出す
+                let contract = new web3.eth.Contract(abi, contractAddress);
+                let message = $('#message').val();
+                let tx = {
+                    from: walletAddress,
+                    to: contractAddress,
+                    gas: 3000000,
+                    data: contract.methods.sendmsg(message).encodeABI()
+                };
+
+                let signPromise = web3.eth.accounts.signTransaction(tx, privateKey);
+                signPromise.then((signedTx) => {
+                    const sentTx = web3.eth.sendSignedTransaction(signedTx.raw || signedTx.rawTransaction);
+                    succeed.innerHTML = "送信中。ちょっと待ってね";
+                    sentTx.on("receipt", receipt => {
+                         succeed.innerHTML = "送信成功！更新ボタンで更新してね";
+                    });
+                    sentTx.on("error", err => {
+                       succeed.innerHTML = err;
+                    });
+                }).catch((err) => {
+                     succeed.innerHTML = err;
+                });
+            });
+        });
+    </script>
+</body></html>
