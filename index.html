@@ -6,21 +6,25 @@
 </head>
 <body>
 
+<div class="kaiwa mystyle" style="text-align:center" id="god">
+
+</div>
+
        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
 <h1><font color="#ff0000" face="Arial Black"></font></h1>
     <div style="text-align:center">
 	<div class="col-xs-4">
         <input type="text" class="form-control" id="message">
-		</div>
+		
         <button id="send" type = "button" class="btn btn-primary"><i class="bi bi-send-check-fill"></i>投稿</button>
 		<button id="get" type = "button" class="btn btn-info"><i class="bi bi-arrow-clockwise"></i>更新</button>
     </div>
-
+</div>
 <div  style="text-align:center">
 <a id="infos" color="lime"><i class="bi bi-check-circle-fill"></i><a color="lime" id="succeed"></a></a>
 </div>
-<div style="text-align:left" id="god">
+<div style="text-align:center" id="god">
 
 </div>
 
@@ -93,7 +97,7 @@
 					
                     result.forEach(function(message){
                         if ( message.length > 0 ) {
-                            $('#god').append('<p class="balloon2-left" id="remover">' + message + '</p>' + '<br>');
+                            $('#god').append('<div class="fukidasi left" id="remover">' + message + '</div>' + '<br>');
 							 
                         }
 						 
